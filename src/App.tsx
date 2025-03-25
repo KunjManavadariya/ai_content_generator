@@ -172,7 +172,7 @@ function App() {
         <h1>AI Content Generator</h1>
         <p>Generate content based on competitor analysis</p>
       </header>
-      <main className="two-column-layout">
+      <main>
         <div className="form-section">
           <form onSubmit={handleSubmit}>
             <div className="form-row">
