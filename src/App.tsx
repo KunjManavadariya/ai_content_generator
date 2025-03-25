@@ -2,6 +2,9 @@
 import { useState, FormEvent, ChangeEvent, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
+
+const apiUrl = import.meta.env.VITE_API_URL;
+
 interface RequestData {
   startDate: string;
   endDate: string;
@@ -135,7 +138,7 @@ function App() {
           .map((id) => id.trim()),
       };
       console.log("Sending request:", JSON.stringify(data1, null, 2));
-      const response = await axios.post("/v1/analytics", data1, {
+      const response = await axios.post(apiUrl, data1, {
         headers: {
           "Content-Type": "application/json",
         },
