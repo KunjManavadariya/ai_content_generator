@@ -1,4 +1,10 @@
 /* src/App.css */
+#root {
+  width: 98%;
+  margin: 15px;
+  padding: 0;
+}
+
 header {
   margin-bottom: 30px;
   text-align: left;
@@ -385,12 +391,6 @@ button:disabled {
   }
 }
 
-/* Optional: Manual Dark Mode Toggle Support */
-body.dark-mode {
-  background-color: var(--bg-primary-dark);
-  color: var(--text-primary-dark);
-}
-
 /* Instagram-style post actions */
 .insta-post-card .post-actions {
   display: flex;
@@ -560,6 +560,7 @@ pre {
   cursor: pointer;
   transition: background-color 0.2s;
   width: auto;
+  margin-right: 10px;
 }
 
 .copy-button:hover {
@@ -574,11 +575,4 @@ pre {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-html,
-body {
-  width: 98%;
-  margin: 10px;
-  padding: 0;
 }
