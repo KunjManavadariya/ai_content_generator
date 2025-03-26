@@ -9,7 +9,7 @@ interface RequestData {
   startDate: string;
   endDate: string;
   userLoginIds: string;
-  competitorUniqueIds: string;
+  competitorIds: string;
   limit: number;
   topHowManyPosts: number;
   generateHowManyPosts: number;
@@ -19,76 +19,55 @@ function App() {
     startDate: "2025-02-17",
     endDate: "2025-03-17",
     userLoginIds: "1053933",
-    competitorUniqueIds: "buffer",
+    competitorIds: "buffer",
     limit: 50,
     topHowManyPosts: 5,
     generateHowManyPosts: 3,
   });
   const [rawResponse, setRawResponse] = useState<any>(null);
   const [processedContent, setProcessedContent] = useState<string[]>([]);
+  const [rawData, setRawData] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isProcessedContentVisible, setIsProcessedContentVisible] =
+    useState<boolean>(false);
+  const [isRawDataVisible, setIsRawDataVisible] = useState<boolean>(false);
+
+  const toggleProcessedContent = () => {
+    setIsProcessedContentVisible(!isProcessedContentVisible);
+  };
+
+  const toggleRawData = () => {
+    setIsRawDataVisible(!isRawDataVisible);
+  };
 
   // Process and extract content from the API response
   useEffect(() => {
     if (!rawResponse) return;
+
     try {
+      // Extracting the processed content based on rawResponse format
       let extractedContent: string[] = [];
-      // Try to extract content based on different possible response structures
-      if (Array.isArray(rawResponse)) {
-        // If response is an array, use it directly
-        extractedContent = rawResponse.map((item) =>
+      if (Array.isArray(rawResponse.response.data)) {
+        extractedContent = rawResponse.response.data.map((item: any) =>
           typeof item === "string" ? item : JSON.stringify(item, null, 2)
         );
-      } else if (rawResponse.generatedContent) {
-        // If response has generatedContent property
-        const content = rawResponse.generatedContent;
-        if (Array.isArray(content)) {
-          extractedContent = content.map((item) =>
-            typeof item === "string" ? item : JSON.stringify(item, null, 2)
-          );
-        } else if (typeof content === "string") {
-          extractedContent = [content];
-        }
-      } else if (rawResponse.content) {
-        // If response has content property
-        const content = rawResponse.content;
-        if (Array.isArray(content)) {
-          extractedContent = content.map((item) =>
-            typeof item === "string" ? item : JSON.stringify(item, null, 2)
-          );
-        } else if (typeof content === "string") {
-          extractedContent = [content];
-        }
-      } else if (rawResponse.posts) {
-        // If response has posts property
-        extractedContent = rawResponse.posts.map((post: unknown) =>
-          typeof post === "string" ? post : JSON.stringify(post, null, 2)
-        );
-      } else if (rawResponse.data) {
-        // If response has data property
-        const data = rawResponse.data;
-        if (Array.isArray(data)) {
-          extractedContent = data.map((item) =>
-            typeof item === "string" ? item : JSON.stringify(item, null, 2)
-          );
-        } else if (typeof data === "string") {
-          extractedContent = [data];
-        } else {
-          extractedContent = [JSON.stringify(data, null, 2)];
-        }
-      } else {
-        // Fallback: display the entire response as a string
-        extractedContent = [JSON.stringify(rawResponse, null, 2)];
       }
       setProcessedContent(extractedContent);
+
+      // Extracting raw data
+      const raw = rawResponse.response.rawData;
+      if (raw) {
+        setRawData(Object.keys(raw).map((key) => raw[key]));
+      }
     } catch (err) {
       console.error("Error processing response:", err);
       setError("Error processing API response. See console for details.");
-      // Show raw response as a string as fallback
       setProcessedContent([JSON.stringify(rawResponse, null, 2)]);
     }
   }, [rawResponse]);
+
+  // Handle form data changes
   const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
@@ -105,56 +84,40 @@ function App() {
   };
   const handleUserIdChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setFormData((prev) => {
-      return {
-        ...prev,
-        userLoginIds: value,
-      };
-    });
+    setFormData((prev) => ({
+      ...prev,
+      userLoginIds: value,
+    }));
   };
   const handleCompetitorChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setFormData((prev) => {
-      return {
-        ...prev,
-        competitorUniqueIds: value,
-      };
-    });
+    setFormData((prev) => ({
+      ...prev,
+      competitorIds: value,
+    }));
   };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     setRawResponse(null);
     setProcessedContent([]);
+    setRawData([]);
     try {
       const data1 = {
         ...formData,
         userLoginIds: formData.userLoginIds
           .split(",")
           .map((id) => Number(id.trim())),
-        competitorUniqueIds: formData.competitorUniqueIds
-          .split(",")
-          .map((id) => id.trim()),
+        competitorIds: formData.competitorIds.split(",").map((id) => id.trim()),
       };
-      console.log("Sending request:", JSON.stringify(data1, null, 2));
       const response = await axios.post(apiUrl, data1, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      // Log the response
-      console.log(response);
-      // If response status is not OK, throw an error
-      if (response.status !== 200 && response.data) {
-        throw new Error(
-          `Server responded with message: ${response.data.message}`
-        );
-      }
-      // Get the response data
-      const data = response.data;
-      console.log("API Response:", data);
-      setRawResponse(data);
+      setRawResponse(response.data);
     } catch (err) {
       console.error("API Error:", err);
       setError(
@@ -166,6 +129,18 @@ function App() {
       setLoading(false);
     }
   };
+
+  const copyToClipboard = (content: string) => {
+    navigator.clipboard
+      .writeText(content)
+      .then(() => {
+        alert("Copied to clipboard!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy text: ", err);
+      });
+  };
+
   return (
     <div className="app-container">
       <header>
@@ -212,13 +187,13 @@ function App() {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="competitorUniqueIds">
+              <label htmlFor="competitorIds">
                 Competitor IDs (comma-separated)
               </label>
               <input
                 type="text"
-                id="competitorUniqueIds"
-                value={formData.competitorUniqueIds}
+                id="competitorIds"
+                value={formData.competitorIds}
                 onChange={handleCompetitorChange}
                 required
               />
@@ -268,18 +243,93 @@ function App() {
         </div>
         <div className="response-section">
           {error && <div className="error-message">Error: {error}</div>}
-          {processedContent.length > 0 && (
-            <div className="result-section">
-              <h2>Generated Content</h2>
-              {processedContent.map((content, index) => (
-                <div key={index} className="generated-content-item">
-                  <h3>Post {index + 1}</h3>
-                  <div className="generated-content">
-                    <pre>{content}</pre>
-                  </div>
+
+          {/* Raw Data Toggle */}
+          {rawData.length > 0 && (
+            <>
+              <div className="toggle-arrow" onClick={toggleRawData}>
+                <span className="toggle-text">Raw Data</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={`arrow-icon ${isRawDataVisible ? "rotated" : ""}`}
+                >
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
+              </div>
+              <div
+                className={`processed-content-container ${
+                  isRawDataVisible ? "open" : "closed"
+                }`}
+              >
+                <div className="result-section">
+                  {rawData.map((rawItem, index) => (
+                    <div key={index} className="generated-content-item">
+                      <div className="generated-content-item-header">
+                        <h3>Raw Post Data {index + 1}</h3>
+                        {index === 0 && (
+                          <button
+                            className="copy-button"
+                            onClick={() =>
+                              copyToClipboard(JSON.stringify(rawData, null, 2))
+                            }
+                          >
+                            Copy
+                          </button>
+                        )}
+                      </div>
+                      <pre>{JSON.stringify(rawItem, null, 2)}</pre>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            </>
+          )}
+
+          {/* Processed Content Toggle */}
+          {processedContent.length > 0 && (
+            <>
+              <div className="toggle-arrow" onClick={toggleProcessedContent}>
+                <span className="toggle-text">Processed Response</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={`arrow-icon ${
+                    isProcessedContentVisible ? "rotated" : ""
+                  }`}
+                >
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
+              </div>
+              <div
+                className={`processed-content-container ${
+                  isProcessedContentVisible ? "open" : "closed"
+                }`}
+              >
+                <div className="result-section">
+                  {processedContent.map((post, index) => (
+                    <div key={index} className="generated-content-item">
+                      <h3>Post {index + 1}</h3>
+                      <pre>{JSON.stringify(post, null, 2)}</pre>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
           )}
 
           {rawResponse?.response?.data ? (
