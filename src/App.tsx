@@ -145,7 +145,7 @@ function App() {
     <div className="app-container">
       <header>
         <h1>AI Content Generator</h1>
-        <p>Generate content based on competitor analysis</p>
+        <h3>Generate content based on competitor analysis</h3>
       </header>
       <main>
         <div className="form-section">
@@ -174,29 +174,31 @@ function App() {
                 />
               </div>
             </div>
-            <div className="form-group">
-              <label htmlFor="userLoginIds">
-                User Login IDs (comma-separated)
-              </label>
-              <input
-                type="text"
-                id="userLoginIds"
-                value={formData.userLoginIds}
-                onChange={handleUserIdChange}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="competitorIds">
-                Competitor IDs (comma-separated)
-              </label>
-              <input
-                type="text"
-                id="competitorIds"
-                value={formData.competitorIds}
-                onChange={handleCompetitorChange}
-                required
-              />
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="userLoginIds">
+                  User Login IDs (comma-separated)
+                </label>
+                <input
+                  type="text"
+                  id="userLoginIds"
+                  value={formData.userLoginIds}
+                  onChange={handleUserIdChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="competitorIds">
+                  Competitor IDs (comma-separated)
+                </label>
+                <input
+                  type="text"
+                  id="competitorIds"
+                  value={formData.competitorIds}
+                  onChange={handleCompetitorChange}
+                  required
+                />
+              </div>
             </div>
             <div className="form-row">
               <div className="form-group">
