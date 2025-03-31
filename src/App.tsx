@@ -2,6 +2,8 @@
 import { useState, FormEvent, ChangeEvent, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
+import { LiveProgressButton } from "./components/LiveProgressButton";
+import { useWebSocketProgress } from "./hooks/useWebSocketProgress";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -13,6 +15,7 @@ interface RequestData {
   limit: number;
   topHowManyPosts: number;
   generateHowManyPosts: number;
+  aiModelPlatform: string;
 }
 function App() {
   const [formData, setFormData] = useState<RequestData>({
@@ -23,6 +26,7 @@ function App() {
     limit: 50,
     topHowManyPosts: 5,
     generateHowManyPosts: 3,
+    aiModelPlatform: "bedrock",
   });
   const [rawResponse, setRawResponse] = useState<any>(null);
   const [processedContent, setProcessedContent] = useState<string[]>([]);
@@ -32,6 +36,8 @@ function App() {
   const [isProcessedContentVisible, setIsProcessedContentVisible] =
     useState<boolean>(false);
   const [isRawDataVisible, setIsRawDataVisible] = useState<boolean>(false);
+  const [jobId, setJobId] = useState<string | null>(null);
+  const { progressMessage } = useWebSocketProgress(jobId);
 
   const toggleProcessedContent = () => {
     setIsProcessedContentVisible(!isProcessedContentVisible);
@@ -96,9 +102,19 @@ function App() {
       competitorIds: value,
     }));
   };
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    const generatedJobId = Date.now().toString();
+    setJobId(generatedJobId);
+
     setLoading(true);
     setError(null);
     setRawResponse(null);
@@ -107,6 +123,7 @@ function App() {
     try {
       const data1 = {
         ...formData,
+        jobId: generatedJobId,
         userLoginIds: formData.userLoginIds
           .split(",")
           .map((id) => Number(id.trim())),
@@ -237,10 +254,24 @@ function App() {
                   required
                 />
               </div>
+              <div className="form-group">
+                <label htmlFor="aiModelPlatform">Select AI Platform</label>
+                <select
+                  id="aiModelPlatform"
+                  name="aiModelPlatform"
+                  value={formData.aiModelPlatform}
+                  onChange={handleSelectChange}
+                  required
+                >
+                  <option value="bedrock">AWS Bedrock</option>
+                  <option value="openai">OpenAI</option>
+                </select>
+              </div>
             </div>
-            <button type="submit" disabled={loading}>
-              {loading ? "Generating..." : "Generate Content"}
-            </button>
+            <LiveProgressButton
+              isLoading={loading}
+              progressText={progressMessage}
+            />
           </form>
         </div>
         <div className="response-section">
