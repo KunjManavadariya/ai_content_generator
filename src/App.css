@@ -90,9 +90,23 @@ button:disabled {
 }
 
 .form-section {
-  flex: 1 1 35%;
+  flex: 2;
   padding-right: 20px;
   min-width: 0;
+}
+
+.form-with-progress {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.progress-area {
+  flex: 1;
+  min-width: 220px;
+  max-width: 300px;
+  transition: opacity 0.3s ease;
 }
 
 .response-section {
@@ -397,6 +411,10 @@ button:disabled {
   }
 
   .post-actions {
+    background-color: var(--bg-secondary-dark);
+  }
+
+  .progress-area .step-progress {
     background-color: var(--bg-secondary-dark);
   }
 }

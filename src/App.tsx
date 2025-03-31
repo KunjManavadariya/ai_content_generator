@@ -2,7 +2,7 @@
 import { useState, FormEvent, ChangeEvent, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
-import { LiveProgressButton } from "./components/LiveProgressButton";
+import { StepProgress } from "./components/StepProgress";
 import { useWebSocketProgress } from "./hooks/useWebSocketProgress";
 
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -165,114 +165,129 @@ function App() {
         <h3>Generate content based on competitor analysis</h3>
       </header>
       <main>
-        <div className="form-section">
-          <form onSubmit={handleSubmit}>
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="startDate">Start Date</label>
-                <input
-                  type="date"
-                  id="startDate"
-                  name="startDate"
-                  value={formData.startDate}
-                  onChange={handleDateChange}
-                  required
-                />
+        <div className="form-with-progress">
+          <div className="form-section">
+            <form onSubmit={handleSubmit}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="startDate">Start Date</label>
+                  <input
+                    type="date"
+                    id="startDate"
+                    name="startDate"
+                    value={formData.startDate}
+                    onChange={handleDateChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="endDate">End Date</label>
+                  <input
+                    type="date"
+                    id="endDate"
+                    name="endDate"
+                    value={formData.endDate}
+                    onChange={handleDateChange}
+                    required
+                  />
+                </div>
               </div>
-              <div className="form-group">
-                <label htmlFor="endDate">End Date</label>
-                <input
-                  type="date"
-                  id="endDate"
-                  name="endDate"
-                  value={formData.endDate}
-                  onChange={handleDateChange}
-                  required
-                />
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="userLoginIds">
+                    User Login IDs (comma-separated)
+                  </label>
+                  <input
+                    type="text"
+                    id="userLoginIds"
+                    value={formData.userLoginIds}
+                    onChange={handleUserIdChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="competitorIds">
+                    Competitor IDs (comma-separated)
+                  </label>
+                  <input
+                    type="text"
+                    id="competitorIds"
+                    value={formData.competitorIds}
+                    onChange={handleCompetitorChange}
+                    required
+                  />
+                </div>
               </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="limit">Limit</label>
+                  <input
+                    type="number"
+                    id="limit"
+                    name="limit"
+                    value={formData.limit}
+                    onChange={handleNumberChange}
+                    min="1"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="topHowManyPosts">Top Posts to Analyze</label>
+                  <input
+                    type="number"
+                    id="topHowManyPosts"
+                    name="topHowManyPosts"
+                    value={formData.topHowManyPosts}
+                    onChange={handleNumberChange}
+                    min="1"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="generateHowManyPosts">
+                    Posts to Generate
+                  </label>
+                  <input
+                    type="number"
+                    id="generateHowManyPosts"
+                    name="generateHowManyPosts"
+                    value={formData.generateHowManyPosts}
+                    onChange={handleNumberChange}
+                    min="1"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="aiModelPlatform">Select AI Platform</label>
+                  <select
+                    id="aiModelPlatform"
+                    name="aiModelPlatform"
+                    value={formData.aiModelPlatform}
+                    onChange={handleSelectChange}
+                    required
+                  >
+                    <option value="bedrock">AWS Bedrock</option>
+                    <option value="openai">OpenAI</option>
+                  </select>
+                </div>
+              </div>
+              <button
+                type="submit"
+                className="submit-button"
+                disabled={loading}
+              >
+                {loading ? "Generating..." : "Generate Content 🚀"}
+              </button>
+            </form>
+          </div>
+          {loading && (
+            <div className="progress-area">
+              <StepProgress
+                progressText={progressMessage}
+                isVisible={loading}
+              />
             </div>
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="userLoginIds">
-                  User Login IDs (comma-separated)
-                </label>
-                <input
-                  type="text"
-                  id="userLoginIds"
-                  value={formData.userLoginIds}
-                  onChange={handleUserIdChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="competitorIds">
-                  Competitor IDs (comma-separated)
-                </label>
-                <input
-                  type="text"
-                  id="competitorIds"
-                  value={formData.competitorIds}
-                  onChange={handleCompetitorChange}
-                  required
-                />
-              </div>
-            </div>
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="limit">Limit</label>
-                <input
-                  type="number"
-                  id="limit"
-                  name="limit"
-                  value={formData.limit}
-                  onChange={handleNumberChange}
-                  min="1"
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="topHowManyPosts">Top Posts to Analyze</label>
-                <input
-                  type="number"
-                  id="topHowManyPosts"
-                  name="topHowManyPosts"
-                  value={formData.topHowManyPosts}
-                  onChange={handleNumberChange}
-                  min="1"
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="generateHowManyPosts">Posts to Generate</label>
-                <input
-                  type="number"
-                  id="generateHowManyPosts"
-                  name="generateHowManyPosts"
-                  value={formData.generateHowManyPosts}
-                  onChange={handleNumberChange}
-                  min="1"
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="aiModelPlatform">Select AI Platform</label>
-                <select
-                  id="aiModelPlatform"
-                  name="aiModelPlatform"
-                  value={formData.aiModelPlatform}
-                  onChange={handleSelectChange}
-                  required
-                >
-                  <option value="bedrock">AWS Bedrock</option>
-                  <option value="openai">OpenAI</option>
-                </select>
-              </div>
-            </div>
-            <LiveProgressButton
-              isLoading={loading}
-              progressText={progressMessage}
-            />
-          </form>
+          )}
         </div>
         <div className="response-section">
           {error && <div className="error-message">Error: {error}</div>}
