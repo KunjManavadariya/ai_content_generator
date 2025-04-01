@@ -297,7 +297,7 @@ Instructions:
                     name="aiPrompt"
                     value={formData.aiPrompt}
                     onChange={handlePromptChange}
-                    rows={6}
+                    rows={10}
                     placeholder="Enter your AI prompt here"
                   />
                 </div>
