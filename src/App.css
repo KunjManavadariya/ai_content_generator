@@ -599,3 +599,12 @@ pre {
   justify-content: space-between;
   align-items: center;
 }
+
+textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  resize: vertical; /* Optional: to allow the textarea to resize vertically */
+}

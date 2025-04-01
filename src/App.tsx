@@ -16,17 +16,26 @@ interface RequestData {
   topHowManyPosts: number;
   generateHowManyPosts: number;
   aiModelPlatform: string;
+  aiPrompt: string;
 }
 function App() {
   const [formData, setFormData] = useState<RequestData>({
     startDate: "2025-02-17",
     endDate: "2025-03-17",
     userLoginIds: "1053933",
-    competitorIds: "buffer",
+    competitorIds: "hootsuite",
     limit: 50,
-    topHowManyPosts: 5,
+    topHowManyPosts: 10,
     generateHowManyPosts: 3,
     aiModelPlatform: "bedrock",
+    aiPrompt: `You are an expert social media content creator. I will provide you with my top highest-performing posts from Instagram, along with top-performing posts from various competitors. Your task is to analyze them and generate 3 new high-performing posts based on the themes, tone, and engagement patterns that have worked best in terms of engagement, likes, comments, shares, etc from my posts and my competitors posts.
+
+Instructions:
+• Only provide the posts (text post or single image post) in a directly usable format.
+• Do NOT include introductions, explanations, or additional analysis.
+• If a post includes image, describe it in full detail.
+• For image, specify composition, colors, lighting, subject placement, background details, and any emotions conveyed.
+• Each post must be self-contained, with captions ready for posting.`,
   });
   const [rawResponse, setRawResponse] = useState<any>(null);
   const [processedContent, setProcessedContent] = useState<string[]>([]);
@@ -74,6 +83,12 @@ function App() {
   }, [rawResponse]);
 
   // Handle form data changes
+  const handlePromptChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      aiPrompt: e.target.value,
+    });
+  };
   const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
@@ -269,6 +284,22 @@ function App() {
                     <option value="bedrock">AWS Bedrock</option>
                     <option value="openai">OpenAI</option>
                   </select>
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="aiPrompt">
+                    AI Model Prompt (Keep empty for the system generated prompt
+                    automatically)
+                  </label>
+                  <textarea
+                    id="aiPrompt"
+                    name="aiPrompt"
+                    value={formData.aiPrompt}
+                    onChange={handlePromptChange}
+                    rows={6}
+                    placeholder="Enter your AI prompt here"
+                  />
                 </div>
               </div>
               <button
