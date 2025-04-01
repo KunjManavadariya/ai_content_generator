@@ -45,5 +45,5 @@ export const useWebSocketProgress = (jobId: string | null) => {
     };
   }, [jobId]);
 
-  return { progressMessage };
+  return { progressMessage, setProgressMessage };
 };

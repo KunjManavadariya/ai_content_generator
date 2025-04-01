@@ -46,7 +46,7 @@ Instructions:
     useState<boolean>(false);
   const [isRawDataVisible, setIsRawDataVisible] = useState<boolean>(false);
   const [jobId, setJobId] = useState<string | null>(null);
-  const { progressMessage } = useWebSocketProgress(jobId);
+  const { progressMessage, setProgressMessage } = useWebSocketProgress(jobId);
 
   const toggleProcessedContent = () => {
     setIsProcessedContentVisible(!isProcessedContentVisible);
@@ -135,6 +135,7 @@ Instructions:
     setRawResponse(null);
     setProcessedContent([]);
     setRawData([]);
+    setProgressMessage(null);
     try {
       const data1 = {
         ...formData,
