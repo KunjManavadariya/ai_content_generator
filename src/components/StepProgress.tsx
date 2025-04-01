@@ -22,10 +22,8 @@ export const StepProgress = ({ progressText, isVisible }: Props) => {
 
   useEffect(() => {
     if (!progressText) return;
-
-    const lower = progressText.toLowerCase();
     const matchedIndex = STEP_LABELS.findIndex((label) =>
-      lower.includes(label.toLowerCase().split(" ")[0])
+      progressText.includes(label)
     );
 
     if (matchedIndex > currentStep) {
