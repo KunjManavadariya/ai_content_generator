@@ -4,10 +4,11 @@ import axios from "axios";
 import "./App.css";
 import { StepProgress } from "./components/StepProgress";
 import { useWebSocketProgress } from "./hooks/useWebSocketProgress";
+import { omitKeys } from "./utils";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
-interface RequestData {
+export type RequestData = {
   startDate: string;
   endDate: string;
   userLoginIds: string;
@@ -17,12 +18,15 @@ interface RequestData {
   generateHowManyPosts: number;
   aiModelPlatform: string;
   aiPrompt: string;
-}
+  imageToTextModel: string;
+  textToTextModel: string;
+  textToImageModel: string;
+};
 function App() {
   const [formData, setFormData] = useState<RequestData>({
     startDate: "2025-02-17",
     endDate: "2025-03-17",
-    userLoginIds: "1053933",
+    userLoginIds: "1185540",
     competitorIds: "hootsuite",
     limit: 50,
     topHowManyPosts: 10,
@@ -36,6 +40,9 @@ Instructions:
 • If a post includes image, describe it in full detail.
 • For image, specify composition, colors, lighting, subject placement, background details, and any emotions conveyed.
 • Each post must be self-contained, with captions ready for posting.`,
+    imageToTextModel: "amazon.nova-pro-v1:0",
+    textToTextModel: "anthropic.claude-3-haiku-20240307-v1:0",
+    textToImageModel: "stability.stable-diffusion-xl-v1",
   });
   const [rawResponse, setRawResponse] = useState<any>(null);
   const [processedContent, setProcessedContent] = useState<string[]>([]);
@@ -46,6 +53,7 @@ Instructions:
     useState<boolean>(false);
   const [isRawDataVisible, setIsRawDataVisible] = useState<boolean>(false);
   const [jobId, setJobId] = useState<string | null>(null);
+  const [isModelDisabled, setIsModelDisabled] = useState<boolean>(false);
   const { progressMessage, setProgressMessage } = useWebSocketProgress(jobId);
 
   const toggleProcessedContent = () => {
@@ -98,9 +106,25 @@ Instructions:
   };
   const handleNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: parseInt(value, 10),
+    const newValue = parseInt(value, 10);
+    const validValue = !isNaN(newValue) && value !== "";
+
+    setFormData((prevData) => {
+      const updatedPrompt = validValue
+        ? prevData.aiPrompt.replace(
+            /(\d+) new high-performing posts/,
+            `${newValue} new high-performing posts`
+          )
+        : prevData.aiPrompt.replace(
+            /(\d+) new high-performing posts/,
+            "0 new high-performing posts"
+          );
+
+      return {
+        ...prevData,
+        [name]: validValue ? newValue : "",
+        aiPrompt: updatedPrompt,
+      };
     });
   };
   const handleUserIdChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -118,10 +142,22 @@ Instructions:
     }));
   };
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
+    if (name === "aiModelPlatform" && value === "openai") {
+      setIsModelDisabled(true);
+      setFormData((prevData) => ({
+        ...prevData,
+        imageToTextModel: "gpt-4o",
+        textToTextModel: "gpt-4o",
+        textToImageModel: "gpt-4o",
+      }));
+    } else {
+      setIsModelDisabled(false);
+    }
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -136,14 +172,28 @@ Instructions:
     setProcessedContent([]);
     setRawData([]);
     setProgressMessage(null);
+
+    const modelsToUse = [
+      formData.imageToTextModel,
+      formData.textToTextModel,
+      formData.textToImageModel,
+    ];
+
+    const data = omitKeys(formData, [
+      "imageToTextModel",
+      "textToTextModel",
+      "textToImageModel",
+    ]);
+
     try {
       const data1 = {
-        ...formData,
+        ...data,
         jobId: generatedJobId,
         userLoginIds: formData.userLoginIds
           .split(",")
           .map((id) => Number(id.trim())),
         competitorIds: formData.competitorIds.split(",").map((id) => id.trim()),
+        modelsToUse,
       };
       const response = await axios.post(apiUrl, data1, {
         headers: {
@@ -284,6 +334,76 @@ Instructions:
                   >
                     <option value="bedrock">AWS Bedrock</option>
                     <option value="openai">OpenAI</option>
+                  </select>
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="imageToTextModel">Image to Text Model</label>
+                  <select
+                    id="imageToTextModel"
+                    name="imageToTextModel"
+                    value={formData.imageToTextModel}
+                    onChange={handleSelectChange}
+                    disabled={isModelDisabled}
+                    required={!isModelDisabled}
+                  >
+                    <option value="amazon.nova-pro-v1:0">AWS Nova Pro</option>
+                    <option value="anthropic.claude-3-5-sonnet-20240620-v1:0">
+                      Claude 3.5 Sonnet V1
+                    </option>
+                    <option value="anthropic.claude-3-haiku-20240307-v1:0">
+                      Claude 3 Haiku
+                    </option>
+                    <option value="anthropic.claude-3-sonnet-20240229-v1:0">
+                      Claude 3 Sonnet V1
+                    </option>
+                    {isModelDisabled && (
+                      <option value="gpt-4o">OpenAI GPT-4o</option>
+                    )}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="textToTextModel">Text to Text Model</label>
+                  <select
+                    id="textToTextModel"
+                    name="textToTextModel"
+                    value={formData.textToTextModel}
+                    onChange={handleSelectChange}
+                    disabled={isModelDisabled}
+                    required={!isModelDisabled}
+                  >
+                    <option value="anthropic.claude-3-haiku-20240307-v1:0">
+                      Claude 3 Haiku
+                    </option>
+                    <option value="anthropic.claude-3-5-sonnet-20240620-v1:0">
+                      Claude 3.5 Sonnet V1
+                    </option>
+                    <option value="amazon.nova-pro-v1:0">AWS Nova Pro</option>
+                    {isModelDisabled && (
+                      <option value="gpt-4o">OpenAI GPT-4o</option>
+                    )}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="textToImageModel">Text to Image Model</label>
+                  <select
+                    id="textToImageModel"
+                    name="textToImageModel"
+                    value={formData.textToImageModel}
+                    onChange={handleSelectChange}
+                    disabled={isModelDisabled}
+                    required={!isModelDisabled}
+                  >
+                    <option value="stability.stable-diffusion-xl-v1">
+                      Stability Diffusion SDXL 1.0
+                    </option>
+                    <option value="amazon.titan-image-generator-v2:0">
+                      AWS Titan Image Generator G1 v2
+                    </option>
+                    {isModelDisabled && (
+                      <option value="gpt-4o">OpenAI GPT-4o</option>
+                    )}
                   </select>
                 </div>
               </div>

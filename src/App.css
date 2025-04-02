@@ -81,14 +81,6 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.error-message {
-  color: #d9534f;
-  margin: 20px 0;
-  padding: 10px;
-  background-color: #f8d7da;
-  border-radius: 4px;
-}
-
 .form-section {
   flex: 2;
   padding-right: 20px;
@@ -563,7 +555,7 @@ pre {
 /* Styling for error message */
 .error-message {
   color: #d9534f;
-  margin: 20px 0;
+  margin: 20px 10px 20px 0;
   padding: 10px;
   background-color: #f8d7da;
   border-radius: 4px;
