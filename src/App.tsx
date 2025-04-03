@@ -37,10 +37,9 @@ function App() {
 
 Instructions:
 • Only provide the posts (text post or single image post) in a directly usable format.
-• Do NOT include introductions, explanations, or additional analysis.
 • If a post includes image, describe it in full detail.
 • For image, specify composition, colors, lighting, subject placement, background details, and any emotions conveyed.
-• Each post must be self-contained, with captions ready for posting.
+• Each post must be self-contained, with detailed captions and high performing hashtags ready for posting.
 • Each post should contain a context on why this content was created, how this post aligns with identified trends, and the expected impact.`,
     imageToTextModel: "amazon.nova-pro-v1:0",
     textToTextModel: "anthropic.claude-3-5-sonnet-20240620-v1:0",
