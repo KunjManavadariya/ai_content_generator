@@ -11,7 +11,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
 export type RequestData = {
   startDate: string;
   endDate: string;
-  userLoginIds: string;
+  userIds: string;
   competitorIds: string;
   limit: number;
   topHowManyPosts: number;
@@ -21,12 +21,13 @@ export type RequestData = {
   imageToTextModel: string;
   textToTextModel: string;
   textToImageModel: string;
+  socialMediaPlatform: string;
 };
 function App() {
   const [formData, setFormData] = useState<RequestData>({
-    startDate: "2025-02-17",
-    endDate: "2025-03-17",
-    userLoginIds: "1185540",
+    startDate: "2025-03-01",
+    endDate: "2025-04-01",
+    userIds: "socialpilot_co",
     competitorIds: "hootsuite",
     limit: 50,
     topHowManyPosts: 10,
@@ -39,10 +40,12 @@ Instructions:
 • Do NOT include introductions, explanations, or additional analysis.
 • If a post includes image, describe it in full detail.
 • For image, specify composition, colors, lighting, subject placement, background details, and any emotions conveyed.
-• Each post must be self-contained, with captions ready for posting.`,
+• Each post must be self-contained, with captions ready for posting.
+• Each post should contain a context on why this content was created, how this post aligns with identified trends, and the expected impact.`,
     imageToTextModel: "amazon.nova-pro-v1:0",
-    textToTextModel: "anthropic.claude-3-haiku-20240307-v1:0",
+    textToTextModel: "anthropic.claude-3-5-sonnet-20240620-v1:0",
     textToImageModel: "stability.stable-diffusion-xl-v1",
+    socialMediaPlatform: "25",
   });
   const [rawResponse, setRawResponse] = useState<any>(null);
   const [processedContent, setProcessedContent] = useState<string[]>([]);
@@ -131,7 +134,7 @@ Instructions:
     const value = e.target.value;
     setFormData((prev) => ({
       ...prev,
-      userLoginIds: value,
+      userIds: value,
     }));
   };
   const handleCompetitorChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -189,10 +192,14 @@ Instructions:
       const data1 = {
         ...data,
         jobId: generatedJobId,
-        userLoginIds: formData.userLoginIds
-          .split(",")
-          .map((id) => Number(id.trim())),
-        competitorIds: formData.competitorIds.split(",").map((id) => id.trim()),
+        userIds:
+          formData.socialMediaPlatform === "5"
+            ? formData.userIds.split(",").map((id) => Number(id.trim()))
+            : formData.userIds.split(",").map((id) => id.trim()),
+        competitorIds:
+          formData.socialMediaPlatform === "5"
+            ? formData.competitorIds.split(",").map((id) => Number(id.trim()))
+            : formData.competitorIds.split(",").map((id) => id.trim()),
         modelsToUse,
       };
       const response = await axios.post(apiUrl, data1, {
@@ -226,6 +233,13 @@ Instructions:
 
   return (
     <div className="app-container">
+      <div className="live-banner">
+        <span className="banner-text">
+          This site is under beta phase. We only support image and text posts to
+          be generated. Please contact POD Parth if you encounter serious issues
+          for more than 3 times.
+        </span>
+      </div>
       <header>
         <h1>AI Content Generator</h1>
         <h3>Generate content based on competitor analysis</h3>
@@ -260,13 +274,26 @@ Instructions:
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="userLoginIds">
-                    User Login IDs (comma-separated)
+                  <label htmlFor="socialMediaPlatform">
+                    Social Media Platform
                   </label>
+                  <select
+                    id="socialMediaPlatform"
+                    name="socialMediaPlatform"
+                    value={formData.socialMediaPlatform}
+                    onChange={handleSelectChange}
+                    required
+                  >
+                    <option value="5">Facebook</option>
+                    <option value="25">Instagram</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="userIds">User IDs (comma-separated)</label>
                   <input
                     type="text"
-                    id="userLoginIds"
-                    value={formData.userLoginIds}
+                    id="userIds"
+                    value={formData.userIds}
                     onChange={handleUserIdChange}
                     required
                   />
@@ -373,11 +400,11 @@ Instructions:
                     disabled={isModelDisabled}
                     required={!isModelDisabled}
                   >
-                    <option value="anthropic.claude-3-haiku-20240307-v1:0">
-                      Claude 3 Haiku
-                    </option>
                     <option value="anthropic.claude-3-5-sonnet-20240620-v1:0">
                       Claude 3.5 Sonnet V1
+                    </option>
+                    <option value="anthropic.claude-3-haiku-20240307-v1:0">
+                      Claude 3 Haiku
                     </option>
                     <option value="amazon.nova-pro-v1:0">AWS Nova Pro</option>
                     {isModelDisabled && (
@@ -524,7 +551,7 @@ Instructions:
                   {processedContent.map((post, index) => (
                     <div key={index} className="generated-content-item">
                       <h3>Post {index + 1}</h3>
-                      <pre>{JSON.stringify(post, null, 2)}</pre>
+                      <pre>{post}</pre>
                     </div>
                   ))}
                 </div>
