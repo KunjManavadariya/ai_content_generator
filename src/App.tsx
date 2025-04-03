@@ -42,7 +42,7 @@ Instructions:
 • Each post must be self-contained, with detailed captions and high performing hashtags ready for posting.
 • Each post should contain a context on why this content was created, how this post aligns with identified trends, and the expected impact.`,
     imageToTextModel: "amazon.nova-pro-v1:0",
-    textToTextModel: "anthropic.claude-3-5-sonnet-20240620-v1:0",
+    textToTextModel: "anthropic.claude-3-haiku-20240307-v1:0",
     textToImageModel: "stability.stable-diffusion-xl-v1",
     socialMediaPlatform: "25",
   });
@@ -147,15 +147,23 @@ Instructions:
     const { name, value } = e.target;
     if (name === "socialMediaPlatform") {
       let updatedPrompt = formData.aiPrompt;
+      let updatedUserId = formData.userIds;
+      let updatedCompetitorId = formData.competitorIds;
       if (value === "5") {
         updatedPrompt = updatedPrompt.replace(/Instagram/g, "Facebook");
+        updatedUserId = "226278177573344";
+        updatedCompetitorId = "177463958820";
       } else if (value === "25") {
         updatedPrompt = updatedPrompt.replace(/Facebook/g, "Instagram");
+        updatedUserId = "socialpilot_co";
+        updatedCompetitorId = "hootsuite";
       }
       setFormData({
         ...formData,
         socialMediaPlatform: value,
         aiPrompt: updatedPrompt,
+        userIds: updatedUserId,
+        competitorIds: updatedCompetitorId,
       });
       return;
     }
@@ -415,13 +423,16 @@ Instructions:
                     disabled={isModelDisabled}
                     required={!isModelDisabled}
                   >
+                    <option value="amazon.nova-pro-v1:0">AWS Nova Pro</option>
                     <option value="anthropic.claude-3-5-sonnet-20240620-v1:0">
                       Claude 3.5 Sonnet V1
                     </option>
                     <option value="anthropic.claude-3-haiku-20240307-v1:0">
                       Claude 3 Haiku
                     </option>
-                    <option value="amazon.nova-pro-v1:0">AWS Nova Pro</option>
+                    <option value="anthropic.claude-3-sonnet-20240229-v1:0">
+                      Claude 3 Sonnet V1
+                    </option>
                     {isModelDisabled && (
                       <option value="gpt-4o">OpenAI GPT-4o</option>
                     )}
