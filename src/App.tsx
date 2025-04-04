@@ -111,23 +111,30 @@ Instructions:
     const newValue = parseInt(value, 10);
     const validValue = !isNaN(newValue) && value !== "";
 
-    setFormData((prevData) => {
-      const updatedPrompt = validValue
-        ? prevData.aiPrompt.replace(
-            /(\d+) new high-performing posts/,
-            `${newValue} new high-performing posts`
-          )
-        : prevData.aiPrompt.replace(
-            /(\d+) new high-performing posts/,
-            "0 new high-performing posts"
-          );
+    if (name === "generateHowManyPosts") {
+      setFormData((prevData) => {
+        const updatedPrompt = validValue
+          ? prevData.aiPrompt.replace(
+              /(\d+) new high-performing posts/,
+              `${newValue} new high-performing posts`
+            )
+          : prevData.aiPrompt.replace(
+              /(\d+) new high-performing posts/,
+              "0 new high-performing posts"
+            );
 
-      return {
+        return {
+          ...prevData,
+          [name]: validValue ? newValue : 0,
+          aiPrompt: updatedPrompt,
+        };
+      });
+    } else {
+      setFormData((prevData) => ({
         ...prevData,
-        [name]: validValue ? newValue : "",
-        aiPrompt: updatedPrompt,
-      };
-    });
+        [name]: newValue,
+      }));
+    }
   };
   const handleUserIdChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
