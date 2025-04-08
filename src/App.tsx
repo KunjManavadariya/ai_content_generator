@@ -125,7 +125,7 @@ Instructions:
 
         return {
           ...prevData,
-          [name]: validValue ? newValue : 0,
+          [name]: newValue,
           aiPrompt: updatedPrompt,
         };
       });
@@ -266,8 +266,7 @@ Instructions:
       <div className="live-banner">
         <span className="banner-text">
           This site is under beta phase. We only support image and text posts to
-          be generated. Please contact POD Parth if you encounter serious issues
-          for more than 3 times.
+          be generated. Please contact POD Parth if you encounter any issues.
         </span>
       </div>
       <header>

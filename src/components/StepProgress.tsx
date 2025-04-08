@@ -11,7 +11,7 @@ const STEP_LABELS = [
   "Validating competitor Ids",
   "Fetching posts from social media",
   "Calculating top posts",
-  "Generating text description of the images",
+  "Generating text description of images and videos",
   "Analysing and generating fresh content",
   "Generating and uploading images for new content",
   "Done ✅",
