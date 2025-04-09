@@ -29,10 +29,10 @@ function App() {
     endDate: "2025-04-01",
     userIds: "socialpilot_co",
     competitorIds: "hootsuite",
-    limit: 50,
-    topHowManyPosts: 10,
+    limit: 100,
+    topHowManyPosts: 20,
     generateHowManyPosts: 3,
-    aiModelPlatform: "bedrock",
+    aiModelPlatform: "openai",
     aiPrompt: `You are an expert social media content creator. I will provide you past data of my page's top highest-performing posts from Instagram, along with top-performing posts from various competitors. Your task is to analyze them and generate 3 new high-performing posts based on the themes, tone, and engagement patterns that have worked best in terms of engagement, likes, comments, shares, etc from my posts and my competitors posts.
 
 Instructions:
@@ -42,8 +42,8 @@ Instructions:
 • Each post must be self-contained, with detailed captions and high performing hashtags ready for posting.
 • Each post should contain a context on why this content was created, how this post aligns with identified trends, and the expected impact.`,
     imageToTextModel: "amazon.nova-pro-v1:0",
-    textToTextModel: "anthropic.claude-3-haiku-20240307-v1:0",
-    textToImageModel: "stability.stable-diffusion-xl-v1",
+    textToTextModel: "gpt-4o",
+    textToImageModel: "gpt-4o",
     socialMediaPlatform: "25",
   });
   const [rawResponse, setRawResponse] = useState<any>(null);
@@ -341,7 +341,7 @@ Instructions:
                 </div>
               </div>
               <div className="form-row">
-                <div className="form-group">
+                {/* <div className="form-group">
                   <label htmlFor="limit">Limit</label>
                   <input
                     type="number"
@@ -352,8 +352,8 @@ Instructions:
                     min="1"
                     required
                   />
-                </div>
-                <div className="form-group">
+                </div> */}
+                {/* <div className="form-group">
                   <label htmlFor="topHowManyPosts">Top Posts to Analyze</label>
                   <input
                     type="number"
@@ -364,7 +364,7 @@ Instructions:
                     min="1"
                     required
                   />
-                </div>
+                </div> */}
                 <div className="form-group">
                   <label htmlFor="generateHowManyPosts">
                     Posts to Generate
@@ -379,7 +379,7 @@ Instructions:
                     required
                   />
                 </div>
-                <div className="form-group">
+                {/* <div className="form-group">
                   <label htmlFor="aiModelPlatform">Select AI Platform</label>
                   <select
                     id="aiModelPlatform"
@@ -391,9 +391,9 @@ Instructions:
                     <option value="bedrock">AWS Bedrock</option>
                     <option value="openai">OpenAI</option>
                   </select>
-                </div>
+                </div> */}
               </div>
-              <div className="form-row">
+              {/* <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="imageToTextModel">Image to Text Model</label>
                   <select
@@ -465,7 +465,7 @@ Instructions:
                     )}
                   </select>
                 </div>
-              </div>
+              </div> */}
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="aiPrompt">
@@ -477,7 +477,7 @@ Instructions:
                     name="aiPrompt"
                     value={formData.aiPrompt}
                     onChange={handlePromptChange}
-                    rows={10}
+                    rows={12}
                     placeholder="Enter your AI prompt here"
                   />
                 </div>
