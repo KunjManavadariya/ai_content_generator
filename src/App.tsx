@@ -34,7 +34,7 @@ function App() {
     topHowManyPosts: 20,
     generateHowManyPosts: 3,
     aiModelPlatform: "openai",
-    aiPrompt: `You are an expert social media content creator. I will provide you past data of my page's top highest-performing posts from Instagram, along with top-performing posts from various competitors. Your task is to analyze them and generate 3 new high-performing posts based on the themes, tone, and engagement patterns that have worked best in terms of engagement, likes, comments, shares, etc from my posts and my competitors posts.
+    aiPrompt: `You are an expert social media content creator. I will provide you past data of my page's top highest-performing posts from Instagram, along with top-performing posts from various competitors. Your task is to analyze them and generate 3 new high-performing posts for my page based on the themes, branding tone, and engagement patterns that have worked best in terms of engagement, likes, comments, shares, etc from my posts and my competitors posts.
 
 Instructions:
 • Only provide the posts (text post or single image post) in a directly usable format.
