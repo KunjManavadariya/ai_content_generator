@@ -634,3 +634,32 @@ textarea {
 .app-container {
   padding: 30px 0;
 }
+
+.branding-tone-group .label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.branding-tone-group label {
+  margin: 0 0 5px 0;
+  font-weight: 500;
+}
+
+.save-tone-button {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  width: auto;
+  margin: 5px 0 0 0;
+}
+
+.save-tone-button:hover {
+  background-color: #3b7dd8;
+}

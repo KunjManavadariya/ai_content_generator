@@ -22,6 +22,7 @@ export type RequestData = {
   textToTextModel: string;
   textToImageModel: string;
   socialMediaPlatform: string;
+  brandingTone: string;
 };
 function App() {
   const [formData, setFormData] = useState<RequestData>({
@@ -45,6 +46,7 @@ Instructions:
     textToTextModel: "gpt-4o",
     textToImageModel: "gpt-4o",
     socialMediaPlatform: "25",
+    brandingTone: "",
   });
   const [rawResponse, setRawResponse] = useState<any>(null);
   const [processedContent, setProcessedContent] = useState<string[]>([]);
@@ -91,6 +93,16 @@ Instructions:
       setProcessedContent([JSON.stringify(rawResponse, null, 2)]);
     }
   }, [rawResponse]);
+
+  useEffect(() => {
+    const savedTone = localStorage.getItem("brandingTone");
+    if (savedTone) {
+      setFormData((prev) => ({
+        ...prev,
+        brandingTone: savedTone,
+      }));
+    }
+  }, []);
 
   // Handle form data changes
   const handlePromptChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -212,15 +224,22 @@ Instructions:
       formData.textToImageModel,
     ];
 
+    const combinedPrompt = `Branding tone: ${
+      formData.brandingTone || ""
+    } \n\n Prompt: ${formData.aiPrompt}`;
+
     const data = omitKeys(formData, [
       "imageToTextModel",
       "textToTextModel",
       "textToImageModel",
+      "brandingTone",
+      "aiPrompt",
     ]);
 
     try {
       const data1 = {
         ...data,
+        aiPrompt: combinedPrompt,
         jobId: generatedJobId,
         userIds:
           formData.socialMediaPlatform === "5"
@@ -300,8 +319,6 @@ Instructions:
                     required
                   />
                 </div>
-              </div>
-              <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="socialMediaPlatform">
                     Social Media Platform
@@ -317,6 +334,23 @@ Instructions:
                     <option value="25">Instagram</option>
                   </select>
                 </div>
+              </div>
+              <div className="form-row">
+                {/* <div className="form-group">
+                  <label htmlFor="socialMediaPlatform">
+                    Social Media Platform
+                  </label>
+                  <select
+                    id="socialMediaPlatform"
+                    name="socialMediaPlatform"
+                    value={formData.socialMediaPlatform}
+                    onChange={handleSelectChange}
+                    required
+                  >
+                    <option value="5">Facebook</option>
+                    <option value="25">Instagram</option>
+                  </select>
+                </div> */}
                 <div className="form-group">
                   <label htmlFor="userIds">User IDs (comma-separated)</label>
                   <input
@@ -339,32 +373,6 @@ Instructions:
                     required
                   />
                 </div>
-              </div>
-              <div className="form-row">
-                {/* <div className="form-group">
-                  <label htmlFor="limit">Limit</label>
-                  <input
-                    type="number"
-                    id="limit"
-                    name="limit"
-                    value={formData.limit}
-                    onChange={handleNumberChange}
-                    min="1"
-                    required
-                  />
-                </div> */}
-                {/* <div className="form-group">
-                  <label htmlFor="topHowManyPosts">Top Posts to Analyze</label>
-                  <input
-                    type="number"
-                    id="topHowManyPosts"
-                    name="topHowManyPosts"
-                    value={formData.topHowManyPosts}
-                    onChange={handleNumberChange}
-                    min="1"
-                    required
-                  />
-                </div> */}
                 <div className="form-group">
                   <label htmlFor="generateHowManyPosts">
                     Posts to Generate
@@ -379,7 +387,47 @@ Instructions:
                     required
                   />
                 </div>
-                {/* <div className="form-group">
+              </div>
+              {/* <div className="form-row"> */}
+              {/* <div className="form-group">
+                  <label htmlFor="limit">Limit</label>
+                  <input
+                    type="number"
+                    id="limit"
+                    name="limit"
+                    value={formData.limit}
+                    onChange={handleNumberChange}
+                    min="1"
+                    required
+                  />
+                </div> */}
+              {/* <div className="form-group">
+                  <label htmlFor="topHowManyPosts">Top Posts to Analyze</label>
+                  <input
+                    type="number"
+                    id="topHowManyPosts"
+                    name="topHowManyPosts"
+                    value={formData.topHowManyPosts}
+                    onChange={handleNumberChange}
+                    min="1"
+                    required
+                  />
+                </div> */}
+              {/* <div className="form-group">
+                  <label htmlFor="generateHowManyPosts">
+                    Posts to Generate
+                  </label>
+                  <input
+                    type="number"
+                    id="generateHowManyPosts"
+                    name="generateHowManyPosts"
+                    value={formData.generateHowManyPosts}
+                    onChange={handleNumberChange}
+                    min="1"
+                    required
+                  />
+                </div> */}
+              {/* <div className="form-group">
                   <label htmlFor="aiModelPlatform">Select AI Platform</label>
                   <select
                     id="aiModelPlatform"
@@ -392,7 +440,7 @@ Instructions:
                     <option value="openai">OpenAI</option>
                   </select>
                 </div> */}
-              </div>
+              {/* </div> */}
               {/* <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="imageToTextModel">Image to Text Model</label>
@@ -467,6 +515,38 @@ Instructions:
                 </div>
               </div> */}
               <div className="form-row">
+                <div className="form-group branding-tone-group">
+                  <label htmlFor="brandingTone">Branding Tone</label>
+                  <textarea
+                    id="brandingTone"
+                    name="brandingTone"
+                    value={formData.brandingTone}
+                    onChange={(e) =>
+                      setFormData({ ...formData, brandingTone: e.target.value })
+                    }
+                    rows={6}
+                    placeholder="Describe your brand's vibe, tone, and audience here"
+                  />
+                  <button
+                    type="button"
+                    className="save-tone-button"
+                    onClick={() => {
+                      if (formData.brandingTone) {
+                        localStorage.setItem(
+                          "brandingTone",
+                          formData.brandingTone
+                        );
+                        alert("Branding tone saved!");
+                      } else {
+                        alert("Branding tone is empty.");
+                      }
+                    }}
+                  >
+                    Save branding tone
+                  </button>
+                </div>
+              </div>
+              <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="aiPrompt">
                     AI Model Prompt (Keep empty for the system generated prompt
@@ -477,7 +557,7 @@ Instructions:
                     name="aiPrompt"
                     value={formData.aiPrompt}
                     onChange={handlePromptChange}
-                    rows={12}
+                    rows={10}
                     placeholder="Enter your AI prompt here"
                   />
                 </div>
