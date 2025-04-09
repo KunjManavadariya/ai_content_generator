@@ -55,7 +55,7 @@ Instructions:
     useState<boolean>(false);
   const [isRawDataVisible, setIsRawDataVisible] = useState<boolean>(false);
   const [jobId, setJobId] = useState<string | null>(null);
-  const [isModelDisabled, setIsModelDisabled] = useState<boolean>(false);
+  // const [isModelDisabled, setIsModelDisabled] = useState<boolean>(false);
   const { progressMessage, setProgressMessage } = useWebSocketProgress(jobId);
 
   const toggleProcessedContent = () => {
@@ -175,7 +175,7 @@ Instructions:
       return;
     }
     if (name === "aiModelPlatform" && value === "openai") {
-      setIsModelDisabled(true);
+      // setIsModelDisabled(true);
       setFormData((prevData) => ({
         ...prevData,
         aiModelPlatform: value,
@@ -185,7 +185,7 @@ Instructions:
       }));
       return;
     } else {
-      setIsModelDisabled(false);
+      // setIsModelDisabled(false);
     }
     setFormData({
       ...formData,
