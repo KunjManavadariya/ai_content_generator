@@ -31,7 +31,7 @@ function App() {
     userIds: "socialpilot_co",
     competitorIds: "hootsuite",
     limit: 100,
-    topHowManyPosts: 20,
+    topHowManyPosts: 10,
     generateHowManyPosts: 3,
     aiModelPlatform: "openai",
     aiPrompt: `You are an expert social media content creator. I will provide you past data of my page's top highest-performing posts from Instagram, along with top-performing posts from various competitors. Your task is to analyze them and generate 3 new high-performing posts for my page based on the themes, branding tone, and engagement patterns that have worked best in terms of engagement, likes, comments, shares, etc from my posts and my competitors posts.
