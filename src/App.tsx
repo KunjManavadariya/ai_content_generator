@@ -37,11 +37,14 @@ function App() {
     aiPrompt: `You are an expert social media content creator. I will provide you past data of my page's top highest-performing posts from Instagram, along with top-performing posts from various competitors. Your task is to analyze them and generate 3 new high-performing posts for my page based on the themes, branding tone, and engagement patterns that have worked best in terms of engagement, likes, comments, shares, etc from my posts and my competitors posts.
 
 Instructions:
+• During analysis, consider the current trends, events, and news that are happening in the world.
+• The post should be relevant for future dates to post on my page.
+• Ignore the posts that are promotional in nature.
 • Only provide the posts (text post or single image post) in a directly usable format.
-• If a post includes image, describe it in full detail.
+•	If a post includes image, describe it in full detail.
 • For image, specify composition, colors, lighting, subject placement, background details, and any emotions conveyed.
-• Each post must be self-contained, with detailed captions and high performing hashtags ready for posting.
-• Each post should contain a context on why this content was created, how this post aligns with identified trends, and the expected impact.`,
+• Each post must be self-contained, with detailed, accurate captions and high performing hashtags ready for posting.
+• Each post should contain a context on what was analysed from the past posts and why this content was created, how this post aligns with identified trends, and the expected impact.`,
     imageToTextModel: "amazon.nova-pro-v1:0",
     textToTextModel: "gpt-4o",
     textToImageModel: "gpt-4o",
