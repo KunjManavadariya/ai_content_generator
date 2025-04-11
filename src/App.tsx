@@ -41,7 +41,7 @@ Instructions:
 • The post should be relevant for future dates to post on my page.
 • Ignore the posts that are promotional in nature.
 • Only provide the posts (text post or single image post) in a directly usable format.
-•	If a post includes image, describe it in full detail.
+• If a post includes image, describe it in full detail.
 • For image, specify composition, colors, lighting, subject placement, background details, and any emotions conveyed.
 • Each post must be self-contained, with detailed, accurate captions and high performing hashtags ready for posting.
 • Each post should contain a context on what was analysed from the past posts and why this content was created, how this post aligns with identified trends, and the expected impact.`,
